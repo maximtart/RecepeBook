@@ -12,7 +12,16 @@ struct RecipeBookApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(
-                viewModel: .init()
+                viewModel: .init(
+                    recipesRepository: .init(
+                        get: {
+                            let response: GetRecipeResponse = try await APIRequestDispatcher
+                                .request(apiRouter: .getRecipe)
+                            
+                            return response.recipes
+                        }
+                    )
+                )
             )
         }
     }

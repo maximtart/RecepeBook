@@ -15,21 +15,16 @@ final class ContentViewModel: ObservableObject {
     
     @Published var error: AlertErrorModel?
     
-    private let recipesRepository = RecipesRepository(
-        get: {
-            let response: GetRecipeResponse = try await APIRequestDispatcher
-                .request(apiRouter: .getRecipe)
-            
-            return response.recipes
-        }
-    )
+    private let recipesRepository: RecipesRepository
     
     init(
         recipes: [RecipeCard.Configuration] = [],
-        collections: [RecipeCollectionItem.Configuration] = []
+        collections: [RecipeCollectionItem.Configuration] = [],
+        recipesRepository: RecipesRepository
     ) {
         self.recipes = recipes
         self.collections = collections
+        self.recipesRepository = recipesRepository
     }
 }
 
@@ -49,7 +44,10 @@ extension ContentViewModel {
                 )
             }
         } catch {
-            self.error = .init(error: error)
+            Task { @MainActor in
+                try await Task.sleep(for: .milliseconds(200))
+                self.error = .init(error: error)
+            }
         }
     }
 }

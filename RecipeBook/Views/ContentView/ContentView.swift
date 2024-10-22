@@ -38,6 +38,7 @@ struct ContentView: View {
                 message: Text(error.description),
                 dismissButton: .default(Text("OK"))
             )
+            
         }
     }
 }
@@ -80,7 +81,15 @@ struct ContentView: View {
                     cuisineType: .canadian,
                     recipesCount: 20
                 )
-            ]
+            ],
+            recipesRepository: .init(
+                get: {
+                    let response: GetRecipeResponse = try await APIRequestDispatcher
+                        .request(apiRouter: .getRecipe)
+                    
+                    return response.recipes
+                }
+            )
         )
     )
 }
